@@ -1,7 +1,7 @@
 ---
 id: TASK-001
 title: Project skeleton, packaging and CI
-status: review
+status: done
 depends:
 scope: pyproject.toml, src/split_bill/**, tests/**, .github/workflows/**, README.md, .gitignore
 ---
