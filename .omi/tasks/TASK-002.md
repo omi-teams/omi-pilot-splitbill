@@ -1,7 +1,7 @@
 ---
 id: TASK-002
 title: Equal split with --people, table output and input validation
-status: planned
+status: in-progress
 depends: TASK-001
 scope: src/split_bill/**, tests/**
 ---
