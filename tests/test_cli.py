@@ -68,5 +68,42 @@ class EqualSplitTest(unittest.TestCase):
             self.assertTrue(err, argv)
 
 
+class TipTest(unittest.TestCase):
+    def test_tip_added_before_splitting(self):
+        code, out, err = run("450000", "--people", "4", "--tip", "10")
+        self.assertEqual((code, err), (0, ""))
+        self.assertEqual(
+            out.splitlines(),
+            [f"Người {i}: 123750" for i in range(1, 5)] + ["Tổng: 495000"],
+        )
+
+    def test_tip_rounds_half_up(self):
+        for amount, expected in (("14", 15), ("15", 17), ("16", 18)):
+            with self.subTest(amount=amount):
+                code, out, err = run(amount, "--people", "1", "--tip", "10")
+                self.assertEqual((code, err), (0, ""))
+                self.assertEqual(out.splitlines(), [f"Người 1: {expected}", f"Tổng: {expected}"])
+
+    def test_zero_tip_equals_default(self):
+        self.assertEqual(
+            run("100000", "--people", "3", "--tip", "0"),
+            run("100000", "--people", "3"),
+        )
+
+    def test_fractional_percentage(self):
+        code, out, err = run("100", "--people", "2", "--tip", "2.5")
+        self.assertEqual((code, err), (0, ""))
+        self.assertEqual(out.splitlines(), ["Người 1: 52", "Người 2: 51", "Tổng: 103"])
+
+    def test_invalid_tip_errors_exit_2(self):
+        for tip in ("-10", "-0.1", "abc", "NaN", "Infinity", "-Infinity"):
+            with self.subTest(tip=tip):
+                code, out, err = run("100", "--people", "2", "--tip", tip)
+                self.assertEqual(code, 2)
+                self.assertEqual(out, "")
+                self.assertIn("--tip", err)
+                self.assertIn("error:", err)
+
+
 if __name__ == "__main__":
     unittest.main()
